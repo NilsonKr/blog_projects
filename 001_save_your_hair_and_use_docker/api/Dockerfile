@@ -9,7 +9,7 @@ RUN pip install --no-cache-dir --upgrade -r requirements.txt
 ## Dev env
 FROM base AS dev
 
-CMD ["fastapi", "dev", "/app/main.py", "--host", "0.0.0.0" ,"--port", "80"]
+CMD ["fastapi", "dev", "./app/main.py", "--host", "0.0.0.0" ,"--port", "80"]
 
 ## Prod env
 FROM base AS prod
@@ -19,4 +19,4 @@ ENV PYTHONUNBUFFERED=1
 
 COPY ./app ./
 
-CMD ["fastapi", "run", "main.py", "--port", "80"]
+CMD ["fastapi", "run", "./app/main.py", "--port", "80"]

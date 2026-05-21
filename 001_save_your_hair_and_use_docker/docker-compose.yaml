@@ -1,0 +1,66 @@
+services:
+  db:
+    build:
+      context: .
+    image: blog_db:dev
+    container_name: docker_postgres
+    environment:
+      POSTGRES_PASSWORD: 1000336953
+      POSTGRES_DB: awesome_db
+    ports:
+      - ':5432'
+    volumes:
+      - blog_docker_postgres:/var/lib/postgresql/
+    networks:
+      - blog_network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d awesome_db']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./api
+      target: dev
+    image: blog_api:dev
+    container_name: docker_api
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:1000336953@docker_postgres:5432/awesome_db
+      DEBUG: 'true'
+    ports:
+      - '8000:80'
+    volumes:
+      - ./api/:/app/
+    networks:
+      - blog_network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+    image: blog_frontend:dev
+    container_name: docker_frontend
+    environment:
+      DATABASE_URL: postgres://postgres:1000336953@docker_postgres:5432/awesome_db
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend/:/app/
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - blog_network
+    depends_on:
+      - api
+
+networks:
+  blog_network:
+    name: blog_network
+
+volumes:
+  blog_docker_postgres:
+    name: blog_docker_postgres
+    external: true
