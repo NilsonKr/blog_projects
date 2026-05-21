@@ -1,18 +1,18 @@
-IMAGE = blog_api:dev
-CONTAINER = docker_api
-NETWORK = blog_network 
+DEFAULT_DB = postgres
+DATABASE_USER = nilsondiazperez
+DATABASE_NAME = awesome_db
 
-run:
-	docker run -d \
-		-p 8000:80 \
-		-e DATABASE_URL=postgresql+psycopg://postgres:1000336953@docker_postgres:5432/awesome_db \
-		-e DEBUG=true \
-		-v $(PWD)/:/app/ \
-		--network $(NETWORK) \
-		--name $(CONTAINER) \
-		$(IMAGE)
+initialize_database:
+	psql -U $(DATABASE_USER) -d $(DEFAULT_DB) -c "CREATE DATABASE $(DATABASE_NAME) WITH OWNER $(DATABASE_USER);"
 
-build:
-	docker build --target dev -t $(IMAGE) .
+check_database:
+	pg_isready -U $(DATABASE_USER) -d $(DATABASE_NAME)
 
-.PHONY: run build
+run_migrations:
+	alembic upgrade head 
+
+check_migrations:
+	psql -U $(DATABASE_USER) -d $(DATABASE_NAME) -c "\dt" && psql -U $(DATABASE_USER) -d $(DATABASE_NAME) -c "select * from subject;"
+
+
+.PHONY: initialize_database check_database make_migration run_migrations
