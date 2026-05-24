@@ -173,7 +173,6 @@
       3px 3px 0px #000000c6,
       4px 4px 0px #00000084;
     animation: blink 0.5s steps(1) infinite alternate;
-    z-index: 20;
   }
   .animate-heading_container_a {
     animation: gradient-fade-a 2s steps(1) infinite;
@@ -181,5 +180,9 @@
 
   .animate-heading_container_b {
     animation: gradient-fade-b 2s steps(1) infinite;
+  }
+
+  .border-groove {
+    border-style: groove;
   }
 }
