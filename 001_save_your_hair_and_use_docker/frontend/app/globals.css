@@ -185,4 +185,17 @@
   .border-groove {
     border-style: groove;
   }
+
+  .border-outset {
+    border-style: outset;
+  }
+
+  .lobby_input-border,
+  .lobby_input-border:focus-visible {
+    border-color: oklch(68.1% 0.162 75.834);
+  }
+
+  .lobby_button-border {
+    border-color: oklch(26.2% 0.051 172.552);
+  }
 }
