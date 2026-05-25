@@ -1,24 +1,43 @@
 'use client'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useOptimistic } from 'react'
 
 import EnterNickname from './EnterNickname'
 import Message from './Message'
-import { Input } from '../ui/input'
-import { Button } from '../ui/button'
+import ChatInput from './ChatInput'
+
+import { MessageType } from '@/app/types'
 
 const LiveLobby = () => {
-  const [messages, setMessages] = useState<string[]>([])
+  const [connection, setConnection] = useState<WebSocket>()
+
+  const [nickName, setNickname] = useState<string>('')
+  const [messages, setMessages] = useState<MessageType[]>([])
 
   useEffect(() => {
     const ws = new WebSocket('ws://localhost:8000/lobby/ws')
 
-    ws.onmessage = (event) => {
-      setMessages((prev) => [...prev, event.data])
+    ws.onmessage = (event: MessageEvent<string>) => {
+      const data: MessageType = JSON.parse(event.data)
+      setMessages((prev) => [...prev, data])
     }
+
+    setConnection(ws)
 
     return () => ws.close()
   }, [])
+
+
+  const handleSetNickname = (nickName: string) => {
+    setNickname(nickName)
+  }
+
+  const sendMessage = (msg: string) => {
+    const newMsg = { name: nickName, msg }
+
+    setMessages(prev => [...prev, { ...newMsg, created_at: new Date().toString() }])
+    connection?.send(JSON.stringify(newMsg))
+  }
 
   return (
     <section className='h-80'>
@@ -34,26 +53,22 @@ const LiveLobby = () => {
           />
         </div>
 
-        {/* <EnterNickname /> */}
-
-        <div>
-          <Message key={3} remitent='Ajoiiii' message='asdasdasdasd' />
-          <Message key={1} remitent='Papu' message='Holaaaa' />
-          <Message key={2} remitent='papu' message='asdasdasdasd' />
-        </div>
+        {!nickName ?
+          <EnterNickname handleSetNickname={handleSetNickname} />
+          :
+          <ul>
+            {messages.map((msg, idx) => (
+              <Message key={idx} remitent={msg.name} message={msg.msg} date={msg.created_at} />
+            ))}
+            {/* <Message key={3} remitent='Ajoiiii' message='asdasdasdasd' />
+            <Message key={2} remitent='papu' message='asdasdasdasd' /> */}
+          </ul>
+        }
       </div>
 
-      <div className='flex gap-1'>
-        <div className='min-w-20 pl-1 bg-gray-950  border-4 border-emerald-600 border-dotted text-emerald-500 font-courier '>/guest</div>
-        <Input id='lobby-input' className='rounded-none focus-visible:ring-0 border-3 border-outset lobby_input-border' placeholder='Say something to the lobby' />
-        <Button className='rounded-none bg-emerald-700 cursor-pointer border-4 border-outset lobby_button-border '>SEND</Button>
-      </div>
+      <ChatInput nickName={nickName} sendMessage={sendMessage} />
+
     </section>
-    // <ul>
-    //   {messages.map((m, i) => (
-    //     <li key={i}>{m}</li>
-    //   ))}
-    // </ul>
   )
 }
 

@@ -3,7 +3,7 @@ from uuid import uuid4
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect 
 from pydantic import ValidationError
 
-from ..models.lobby import  LobbyMessage
+from ..models.lobby import  LobbyMessage, LobbyMessageResponse
 
 router = APIRouter(prefix="/lobby", tags=["lobby"])
 
@@ -12,7 +12,7 @@ class ConnectionManager:
         self.active: Dict[str, WebSocket] = {}
   
     async def register(self,  ws: WebSocket):
-        client_id = str(uuid4())
+        client_id = str(uuid4())       
         self.active[client_id] = ws
         return client_id
 
@@ -22,7 +22,7 @@ class ConnectionManager:
     async def broadcast(self, remitent: str, message):
         for cid, ws in self.active.items():
             if cid != remitent:
-              await ws.send_json(message)
+              await ws.send_text(message)
 
 manager = ConnectionManager()
 
@@ -31,10 +31,10 @@ manager = ConnectionManager()
 async def lobby(websocket: WebSocket):
     await websocket.accept()
     client_id = await manager.register(websocket)
-    await websocket.send_text(client_id)
-
+    
     try:
         while True:
+
             payload = await websocket.receive_json()
 
             try: 
@@ -44,9 +44,11 @@ async def lobby(websocket: WebSocket):
                 await websocket.send_text('Wrong data model')
                 continue
             
+            send_data = LobbyMessageResponse(**data.model_dump())
+
             await manager.broadcast(
                 remitent=client_id, 
-                message=data.model_dump()
+                message=send_data.model_dump_json()
             )
                         
     except WebSocketDisconnect:
