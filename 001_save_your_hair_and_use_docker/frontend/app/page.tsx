@@ -6,6 +6,7 @@ import Header from '@layout/Header'
 import WantedImage from "@components/WantedImage";
 import WindowButton from "./components/WindowButton";
 import LobbyChat from '@components/LobbyChat'
+import Footer from "@layout/Footer";
 
 export default async function Home() {
   const subjects = await fetchSubjects()
@@ -42,7 +43,7 @@ export default async function Home() {
             <WantedImage href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyeMfhgcZhXcteFc3MUX5LDkS3smGiBxX2rw&s" />
           </section>
 
-          <div className="relative h-6 w-full my-8">
+          <div className="relative h-6 w-full my-12">
             <Image
               src='/smiley-divider.gif'
               alt="Smiley divider"
@@ -50,9 +51,10 @@ export default async function Home() {
             />
           </div>
           <LobbyChat />
+
+          <Footer />
         </section>
       </main>
-      {/* <LobbyChat /> */}
     </div>
   );
 }

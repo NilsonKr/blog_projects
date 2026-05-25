@@ -2,6 +2,8 @@
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
+import EnterNickname from './EnterNickname'
+import Message from './Message'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 
@@ -22,10 +24,7 @@ const LiveLobby = () => {
     <section className='h-80'>
       <div className='h-[90%] bg-black'>
         <div className=' flex px-4 py-2 justify-between items-center border-b border-b-gray-500 text-teal-300 font-courier'>
-          <h2>
-            # Lobby chat
-          </h2>
-
+          <h2> # Lobby chat</h2>
           <Image
             src='/online.gif'
             alt='Online lobby chat'
@@ -35,6 +34,13 @@ const LiveLobby = () => {
           />
         </div>
 
+        {/* <EnterNickname /> */}
+
+        <div>
+          <Message key={3} remitent='Ajoiiii' message='asdasdasdasd' />
+          <Message key={1} remitent='Papu' message='Holaaaa' />
+          <Message key={2} remitent='papu' message='asdasdasdasd' />
+        </div>
       </div>
 
       <div className='flex gap-1'>
