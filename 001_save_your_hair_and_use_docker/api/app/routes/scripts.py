@@ -8,7 +8,7 @@ from app.deps import Session_dep
 
 router = APIRouter(prefix="/scripts", tags=["scripts"])
 
-@router.post("/", status_code=201, response_model=list[SubjectRead])
+@router.post("/create_subjects", status_code=201, response_model=list[SubjectRead])
 async def create_sample_subjects(session: Session_dep):
     subject_1 = Subject(name="Ppepe carlo", pic="https://example.com/subject1.jpg")
     subject_2 = Subject(name="SSDSUD", pic="https://example.com/subject2.jpg")

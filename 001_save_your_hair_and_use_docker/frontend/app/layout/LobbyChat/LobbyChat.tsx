@@ -1,10 +1,11 @@
 'use client'
-import Image from 'next/image'
-import { useEffect, useState, useOptimistic } from 'react'
 
-import EnterNickname from './EnterNickname'
-import Message from './Message'
-import ChatInput from './ChatInput'
+import Image from 'next/image'
+import { useEffect, useState } from 'react'
+
+import EnterNickname from '@components/LobbyChat/EnterNickname'
+import Message from '@components/LobbyChat/Message'
+import ChatInput from '@components/LobbyChat/ChatInput'
 
 import { MessageType } from '@/app/types'
 
@@ -60,14 +61,11 @@ const LiveLobby = () => {
             {messages.map((msg, idx) => (
               <Message key={idx} remitent={msg.name} message={msg.msg} date={msg.created_at} />
             ))}
-            {/* <Message key={3} remitent='Ajoiiii' message='asdasdasdasd' />
-            <Message key={2} remitent='papu' message='asdasdasdasd' /> */}
           </ul>
         }
       </div>
 
       <ChatInput nickName={nickName} sendMessage={sendMessage} />
-
     </section>
   )
 }

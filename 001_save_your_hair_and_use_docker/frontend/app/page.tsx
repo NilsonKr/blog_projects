@@ -1,8 +1,8 @@
 import Header from '@layout/Header'
 import WindowTop from "./layout/WindowTop";
-import Board from "./layout/Board/Board";
-import SmileyDivider from './components/SmileyDivider';
-import LobbyChat from '@components/LobbyChat'
+import Board from "@layout/Board";
+import SmileyDivider from '@components/SmileyDivider';
+import LobbyChat from '@layout/LobbyChat'
 import Footer from "@layout/Footer";
 
 export default async function Home() {

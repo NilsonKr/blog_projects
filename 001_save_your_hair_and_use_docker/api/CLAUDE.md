@@ -1,32 +1,31 @@
 ## API Project structure
 
-├── alembic/
-│ ├── versions/
-│ ├── env.py
-│ └── script.py.mako
 ├── app/
 │ ├── **init**.py
 │ ├── main.py
+│ ├── deps.py
 │ ├── core/
 │ │ ├── **init**.py
 │ │ ├── config.py
 │ │ └── database.py
 │ ├── models/
 │ │ ├── **init**.py
-│ │ └── user.py
+│ │ ├── lobby.py
+│ │ └── subjects.py
 │ ├── schemas/
 │ │ ├── **init**.py
-│ │ └── user.py
-│ ├── api/
+│ │ └── subject.py
+│ ├── routes/
 │ │ ├── **init**.py
-│ │ ├── deps.py
-│ │ └── routes/
-│ │ ├── **init**.py
-│ │ └── users.py
-│ └── crud/
+│ │ ├── scripts.py
+│ │ └── subjects.py
+│ └── websockets/
 │ ├── **init**.py
-│ └── user.py
+│ └── lobby.py
 ├── .env
 ├── alembic.ini
+├── Dockerfile
+├── Makefile
 ├── pyproject.toml
+├── requirements.txt
 └── README.md

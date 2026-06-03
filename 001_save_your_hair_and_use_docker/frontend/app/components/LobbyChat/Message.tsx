@@ -1,5 +1,3 @@
-'use client'
-
 import { getNicknameColor } from '@/app/lib/utils'
 
 type ComponentProps = {

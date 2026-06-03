@@ -1,10 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel, Field
 
-class Lobby(BaseModel):
-    id: str
-    name: str
-
 class LobbyMessage(BaseModel):
     name: str
     msg: str
