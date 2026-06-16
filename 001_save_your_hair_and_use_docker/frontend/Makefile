@@ -8,7 +8,7 @@ run:
 	 	-v $(PWD)/:/app/ \
 		-v /app/node_modules \
 		-v /app/.next \
-		-e DATABASE_URL=postgres://postgres:1000336953@docker_postgres:5432/awesome_db \
+		-e DATABASE_URL=postgres://postgres:12345@docker_postgres:5432/awesome_db \
 		--network $(NETWORK) \
 		--name $(CONTAINER) \
 		$(IMAGE)

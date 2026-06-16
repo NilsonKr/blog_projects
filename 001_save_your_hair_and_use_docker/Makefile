@@ -5,7 +5,7 @@ NETWORK = blog_network
 run_db:
 	docker run -d \
 		-p 5433:5432 \
-		-e POSTGRES_PASSWORD=1000336953 \
+		-e POSTGRES_PASSWORD=12345 \
 		-e POSTGRES_DB=awesome_db \
 		-v blog_docker_postgres:/var/lib/postgresql/ \
 		--network $(NETWORK) \

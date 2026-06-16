@@ -31,7 +31,7 @@ const EnterNickname: React.FC<ComponentProps> = ({ handleSetNickname }) => {
 
         <p className='my-2'>Start chatting</p>
 
-        <button type='submit'>
+        <button className='cursor-pointer' type='submit'>
           <Image
             src='/enter.gif'
             alt='Enter chat'

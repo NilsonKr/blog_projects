@@ -1,0 +1,87 @@
+# Production compose – builds the `prod` stage of api/ and frontend/ Dockerfiles.
+#
+# IMPORTANT: the frontend image runs `next build`, which statically renders a
+# page that queries Postgres directly (SELECT * FROM subject). So Postgres must
+# be UP and migrated BEFORE the frontend image is built. That ordering can't be
+# expressed in a single `up`, so follow the steps in the walkthrough:
+#
+#   1) docker compose -f docker-compose.prod.yaml --env-file .env.prod up -d --build db api
+#   2) docker compose -f docker-compose.prod.yaml --env-file .env.prod \
+#        run --rm -v "$(pwd)/api:/app" api alembic upgrade head
+#   3) docker compose -f docker-compose.prod.yaml --env-file .env.prod build frontend
+#   4) docker compose -f docker-compose.prod.yaml --env-file .env.prod up -d frontend
+#
+# The frontend build joins `blog_network_prod` (build.network) so the build
+# container can resolve the `db` hostname while the db is already running.
+
+name: blog-prod
+
+services:
+  db:
+    image: postgres:18.4-alpine3.23
+    container_name: blog_postgres_prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}
+      POSTGRES_DB: ${POSTGRES_DB:-awesome_db}
+    volumes:
+      - blog_pg_prod:/var/lib/postgresql/data
+    networks:
+      - blog_network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d ${POSTGRES_DB:-awesome_db}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./api
+      target: prod
+    image: blog_api_prod
+    container_name: blog_api_prod
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-awesome_db}
+      DEBUG: 'false'
+    ports:
+      - '8000:80'
+    networks:
+      - blog_network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      target: prod
+      # Build runs on the live network so `next build` can reach Postgres.
+      network: blog_network_prod
+      args:
+        # postgres-js scheme (frontend connects to PG directly), build-time only.
+        DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-awesome_db}
+    image: blog_frontend_prod
+    container_name: blog_frontend_prod
+    restart: unless-stopped
+    environment:
+      # Runtime value for server-side queries (SSR / server actions).
+      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-awesome_db}
+    ports:
+      - '3000:3000'
+    networks:
+      - blog_network
+    depends_on:
+      db:
+        condition: service_healthy
+      api:
+        condition: service_started
+
+networks:
+  blog_network:
+    name: blog_network_prod
+
+volumes:
+  blog_docker_postgres:
+    name: blog_docker_postgres
+    external: true
